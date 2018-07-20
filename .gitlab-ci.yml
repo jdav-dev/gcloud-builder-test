@@ -1,4 +1,5 @@
 stages:
+- setup
 - test
 - build
 
@@ -7,14 +8,46 @@ image: elixir:1.6-alpine
 services:
   - postgres:9.6-alpine
 
+variables:
+  MIX_ENV: test
+
 before_script:
   - mix local.rebar --force
   - mix local.hex --force
-  - mix deps.get
+  - mix deps.get --all, compile
 
-mix:
-  script:
-  - mix test
+cache:
+  key: "v1-$CI_COMMIT_REF_SLUG"
+  policy: pull
+  paths:
+    - _build
+    - deps
+
+pull dependencies:
+  stage: setup
+  cache:
+    key: "v1-$CI_COMMIT_REF_SLUG"
+    policy: pull-push
+    paths:
+      - _build
+      - deps
+  before_script:
+    - mix local.rebar --force
+    - mix local.hex --force
+  script: |
+    mix do deps.get --all, compile
+
+run tests:
+  stage: test
+  script: |
+    mix test --cover
+  coverage: '/\[TOTAL\]\s*\d+\.\d+%/'
+
+static code analysis:
+  stage: test
+  allow_failure: true
+  script: |
+    mix credo --verbose
 
 docker build:
   stage: build
