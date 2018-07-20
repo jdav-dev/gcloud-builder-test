@@ -12,7 +12,8 @@ RUN apk add --no-cache nodejs \
 
 COPY . .
 
-RUN mix do deps.get, compile, phx.digest \
+RUN ls */** \
+    && mix do deps.get, compile, phx.digest \
     && ./assets/node_modules/brunch/bin/brunch b -p ./assets/ \
     && mix release --no-tar --verbose
 
