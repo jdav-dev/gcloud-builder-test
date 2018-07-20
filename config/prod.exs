@@ -62,3 +62,12 @@ config :logger, level: :info
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.
 # import_config "prod.secret.exs"
+
+# Configure your database
+config :gitlab_ci_test, GitlabCiTest.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  username: "postgres",
+  password: "postgres",
+  database: "gitlab_ci_test",
+  hostname: "localhost",
+  pool_size: 10
