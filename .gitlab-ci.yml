@@ -1,3 +1,7 @@
+stages:
+- test
+- build
+
 image: elixir:1.6-alpine
 
 services:
@@ -11,3 +15,34 @@ before_script:
 mix:
   script:
   - mix test
+
+docker build:
+  stage: build
+  image: docker:stable
+  services:
+    - docker:dind
+  variables:
+    MIX_ENV: prod
+  before_script:
+    - apk add --no-cache git
+    - docker version
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+  script: |
+    SHORT_GIT_SHA=$(git rev-parse --short $CI_COMMIT_SHA)
+    SHA_TAG="$CI_REGISTRY_IMAGE:$SHORT_GIT_SHA"
+    BRANCH_TAG="$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+
+    docker pull $BRANCH_TAG || true
+    
+    docker build --cache-from $BRANCH_TAG -t $SHA_TAG .
+    docker push $SHA_TAG
+
+    docker tag $SHA_TAG $BRANCH_TAG
+    docker push $BRANCH_TAG
+
+    if [ "${CI_COMMIT_REF_NAME}" == "master" ]; then
+      LATEST_TAG="$CI_REGISTRY_IMAGE:latest"
+      docker tag $SHA_TAG $LATEST_TAG
+      docker push $LATEST_TAG
+    fi
+
