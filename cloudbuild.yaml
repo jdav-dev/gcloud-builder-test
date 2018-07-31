@@ -1,9 +1,9 @@
 steps:
-- name: 'elixir:1.6-alpine'
-  args: ['mix', 'local.rebar', '--force', '&&', 'mix', 'local.hex', '--force', '&&', 'mix', 'test', '--trace', '--cover']
+- name: 'bitwalker/alpine-elixir-phoenix:1.6.6'
+  args: ['mix', 'test', '--trace', '--cover']
   waitFor: ['-']
-- name: 'elixir:1.6-alpine'
-  args: ['mix', 'local.rebar', '--force', '&&', 'mix', 'local.hex', '--force', '&&', 'mix', 'credo', '--verbose']
+- name: 'bitwalker/alpine-elixir-phoenix:1.6.6'
+  args: ['mix', 'credo', '--verbose']
   waitFor: ['-']
 - name: gcr.io/cloud-builders/docker
   args: ['build', '-t', 'gcr.io/$PROJECT_ID/quickstart-image', '.']
