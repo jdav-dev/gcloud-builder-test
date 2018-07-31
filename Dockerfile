@@ -6,7 +6,7 @@ WORKDIR /opt/${APP_NAME}
 
 ENV MIX_ENV=prod
 
-RUN apk add --no-cache nodejs \
+RUN apk add --no-cache npm \
     && mix local.hex --force \
     && mix local.rebar --force
 
