@@ -1,11 +1,17 @@
 steps:
-- name: 'bitwalker/alpine-elixir-phoenix:1.6.6'
+- id: pull dependencies
+  name: bitwalker/alpine-elixir-phoenix:1.6.6
+  args: ["mix", "do", "deps.get --all, compile"]
+- id: run tests
+  name: bitwalker/alpine-elixir-phoenix:1.6.6
   args: ['mix', 'test', '--trace', '--cover']
-  waitFor: ['-']
-- name: 'bitwalker/alpine-elixir-phoenix:1.6.6'
+  waitFor: ["pull dependencies"]
+- id: static code analysis
+  name: bitwalker/alpine-elixir-phoenix:1.6.6
   args: ['mix', 'credo', '--verbose']
-  waitFor: ['-']
-- name: gcr.io/cloud-builders/docker
+  waitFor: ["pull dependencies"]
+- id: docker build
+  name: gcr.io/cloud-builders/docker
   args: ['build', '-t', 'gcr.io/$PROJECT_ID/quickstart-image', '.']
 images:
 - gcr.io/$PROJECT_ID/quickstart-image
