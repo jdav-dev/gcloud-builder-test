@@ -1,5 +1,11 @@
 steps:
-- name: 'gcr.io/cloud-builders/docker'
-  args: [ 'build', '-t', 'gcr.io/$PROJECT_ID/quickstart-image', '.' ]
+- name: 'elixir:1.6-alpine'
+  args: ['mix', 'test', '--trace', '--cover']
+  waitFor: ['-']
+- name: 'elixir:1.6-alpine'
+  args: ['mix', 'credo', '--verbose']
+  waitFor: ['-']
+- name: gcr.io/cloud-builders/docker
+  args: ['build', '-t', 'gcr.io/$PROJECT_ID/quickstart-image', '.']
 images:
-- 'gcr.io/$PROJECT_ID/quickstart-image'
+- gcr.io/$PROJECT_ID/quickstart-image
