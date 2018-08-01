@@ -15,5 +15,5 @@ config :gitlab_ci_test, GitlabCiTest.Repo,
   username: "postgres",
   password: "postgres",
   database: "gitlab_ci_test_test",
-  hostname: "localhost",
+  hostname: "postgres",
   pool: Ecto.Adapters.SQL.Sandbox
