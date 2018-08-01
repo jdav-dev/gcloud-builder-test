@@ -23,7 +23,7 @@ steps:
   waitFor: ["pull dependencies"]
 - id: pull docker cache image
   name: gcr.io/cloud-builders/docker
-  args: ['pull', 'gcr.io/$PROJECT_ID/quickstart-image:${BRANCH_NAME}']
+  args: ['pull', 'gcr.io/$PROJECT_ID/quickstart-image:latest']
 - id: docker build
   name: gcr.io/cloud-builders/docker
   args: [
