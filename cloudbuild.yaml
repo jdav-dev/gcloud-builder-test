@@ -1,29 +1,32 @@
 steps:
 - id: pull dependencies
   name: bitwalker/alpine-elixir-phoenix:1.6.6
-  args: ["mix", "do", "deps.get", "--all", ",", "compile"]
+  args: ['mix', 'do', 'deps.get', '--all', ',', 'compile']
   env:
   - MIX_ENV=test
-  waitFor: ["-"]
+  waitFor: ['-']
 - id: start test database
   name: gcr.io/cloud-builders/docker
-  args: ["run", "--name=postgres", "--network=cloudbuild", "-d", "--rm", "-p=5432:5432", "postgres:9.6-alpine"]
-  waitFor: ["-"]
+  args: ['run', '--name=postgres', '--network=cloudbuild', '-d', '--rm', '-p=5432:5432', 'postgres:9.6-alpine']
+  waitFor: ['-']
 - id: run tests
   name: bitwalker/alpine-elixir-phoenix:1.6.6
-  args: ["mix", "test", "--cover", "--trace"]
+  args: ['mix', 'test', '--cover', '--trace']
   env:
   - MIX_ENV=test
-  waitFor: ["start test database", "pull dependencies"]
+  waitFor: ['start test database', 'pull dependencies']
 - id: static code analysis
   name: bitwalker/alpine-elixir-phoenix:1.6.6
-  args: ["mix", "credo", "--verbose"]
+  args: ['mix', 'credo', '--verbose']
   env:
   - MIX_ENV=test
-  waitFor: ["pull dependencies"]
+  waitFor: ['pull dependencies']
 - id: pull docker cache image
   name: gcr.io/cloud-builders/docker
-  args: ['pull', 'gcr.io/$PROJECT_ID/quickstart-image:latest']
+  entrypoint: bash
+  args:
+  - '-c'
+  - docker pull gcr.io/$PROJECT_ID/quickstart-image:${BRANCH_NAME} || true
 - id: docker build
   name: gcr.io/cloud-builders/docker
   args: [
