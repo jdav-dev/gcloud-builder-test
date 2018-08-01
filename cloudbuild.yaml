@@ -5,6 +5,7 @@ steps:
   waitFor: ["-"]
 - id: start test database
   name: postgres:9.6-alpine
+  args: ["&"]
   waitFor: ["-"]
 - id: run tests
   name: bitwalker/alpine-elixir-phoenix:1.6.6
