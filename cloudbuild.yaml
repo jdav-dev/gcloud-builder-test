@@ -32,7 +32,7 @@ steps:
     '--cache-from=gcr.io/$PROJECT_ID/quickstart-image:${BRANCH_NAME}',
     '.'
   ]
-- id: docker build
+- id: docker tag latest
   name: gcr.io/cloud-builders/docker
   args: [
     'tag',
