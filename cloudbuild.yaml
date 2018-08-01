@@ -4,8 +4,8 @@ steps:
   args: ["mix", "do", "deps.get", "--all", ",", "compile"]
   waitFor: ["-"]
 - id: start test database
-  name: postgres:9.6-alpine
-  args: ["sh", "-c", "docker-entrypoint.sh", "postgres", "2>&1", "&"]
+  name: gcr.io/cloud-builders/docker
+  args: ['run', '-d', '--rm', '-p 5432:5432', 'postgres:9.6-alpine']
   waitFor: ["-"]
 - id: run tests
   name: bitwalker/alpine-elixir-phoenix:1.6.6
